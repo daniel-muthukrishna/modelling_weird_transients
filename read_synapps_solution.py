@@ -27,7 +27,7 @@ def read_synapps_solution(xStr):
         for j in range(numOfOpacityParams):
             param = OPACITY_PROFILE_PARAMETERS[j]
             index = i + (j * numOfOpacityParams)
-            ionInfo[ionName][param] = ionVals[i + (j * numOfIons)]
+            ionInfo[ionName][param] = ionVals[index]
 
     return setupInfo, ionInfo
 
