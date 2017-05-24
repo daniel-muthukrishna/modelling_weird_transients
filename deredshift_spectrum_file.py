@@ -50,7 +50,7 @@ def make_rest_spectrum_file(inFilename, outFilename, z):
     wave, flux, fluxErr = read_file(inFilename)
     waveRest = deredshift_spectrum(wave, z)
     fluxNorm, fluxNormErr = normalise_flux(flux, fluxErr)
-    smoothedFlux = smooth_spectrum(fluxNorm, 5)
+    smoothedFlux = smooth_spectrum(fluxNorm, 1)
     save_spectrum_file(outFilename, waveRest, smoothedFlux, fluxNormErr)
 
     import matplotlib.pyplot as plt

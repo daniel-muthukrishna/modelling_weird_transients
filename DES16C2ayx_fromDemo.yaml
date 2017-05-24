@@ -4,8 +4,8 @@ grid :
     v_size       : 100
     v_outer_max  : 30.0
 opacity :
-    line_dir     : /mimsy/danmuth/es/lines
-    ref_file     : /mimsy/danmuth/es/refs.dat 
+    line_dir     : /Users/danmuth/local/share/es/lines
+    ref_file     : /Users/danmuth/local/share/es/refs.dat
     form         : exp
     v_ref        : 10.0
     log_tau_min  : -2.0
@@ -18,10 +18,10 @@ evaluator :
     target_file  : DES16C2ayx_2016sep24_rest_frame.txt
     vector_norm  : 2.0
     regions      :
-        apply    : [      Yes,     Yes,     Yes ]
-        weight   : [     0.00,    1.00,    1.00 ]
-        lower    : [     0.00, 2940.00, 5500.00 ]
-        upper    : [ 10000.00, 5400.00, 8770.00 ]
+        apply    : [      Yes,     Yes ]
+        weight   : [     0.00,    1.00 ]
+        lower    : [     0.00, 2940.00 ]
+        upper    : [ 10000.00, 8770.00 ]
 config :
     fit_file     : DES16C2ayx_2016sep24.fit
     cache_file   : DES16C2ayx_2016sep24.cache
@@ -29,9 +29,9 @@ config :
     a0           : { fixed:  No, start:   0.99, lower:   0.00, upper:  10.00, scale:   1.00 }
     a1           : { fixed:  No, start:  -1.61, lower: -10.00, upper:  10.00, scale:   1.00 }
     a2           : { fixed:  No, start:   2.16, lower: -10.00, upper:  10.00, scale:   1.00 }
-    v_phot       : { fixed:  No, start:  11.50, lower:   5.00, upper:  15.00, scale:   1.00 }
+    v_phot       : { fixed:  No, start:  11.50, lower:   5.00, upper:  35.00, scale:   1.00 }
     v_outer      : { fixed: Yes, start:  30.00, lower:  15.00, upper:  30.00, scale:   1.00 }
-    t_phot       : { fixed:  No, start:   7.65, lower:   5.00, upper:  10.00, scale:   1.00 }
+    t_phot       : { fixed:  No, start:   7.65, lower:   5.00, upper:  30.00, scale:   1.00 }
 
     ions         : [     601,    800,   1100,   1201,   1401,   1402,   1601,   2001,   2601,   2602,   2701,   2801 ]
     active       : [     Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes ]
@@ -47,13 +47,13 @@ config :
         fixed    : [      No,     No,     No,     No,     No,     No,     No,     No,     No,     No,     No,     No ]
         start    : [   11.50,  11.50,  11.50,  11.50,  11.50,  11.50,  11.50,  11.50,  11.50,  11.50,  11.50,  11.50 ]
         lower    : [    5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00 ]
-        upper    : [   15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00 ]
+        upper    : [   30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00 ]
         scale    : [    1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00 ]
     v_max        :
         fixed    : [     Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes,    Yes ]
         start    : [   30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00 ]
         lower    : [   15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00,  15.00 ]
-        upper    : [   30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00,  30.00 ]
+        upper    : [   50.00,  50.00,  50.00,  50.00,  50.00,  50.00,  50.00,  50.00,  50.00,  50.00,  50.00,  50.00 ]
         scale    : [    1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00 ]
     aux          :
         fixed    : [      No,     No,     No,     No,     No,     No,     No,     No,     No,     No,     No,     No ]
@@ -64,6 +64,6 @@ config :
     temp         :
         fixed    : [      No,     No,     No,     No,     No,     No,     No,     No,     No,     No,     No,     No ]
         start    : [   21.50,   8.23,  25.00,  25.00,   7.09,   5.00,   5.03,  11.20,  10.00,  14.60,  10.70,  15.20 ]
-        lower    : [    5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00,   5.00 ]
-        upper    : [   25.00,  25.00,  25.00,  25.00,  25.00,  25.00,  25.00,  25.00,  25.00,  25.00,  25.00,  25.00 ]
+        lower    : [    2.00,   2.00,   2.00,   2.00,   2.00,   2.00,   2.00,   2.00,   2.00,   2.00,   2.00,   2.00 ]
+        upper    : [   35.00,  35.00,  35.00,  35.00,  35.00,  35.00,  35.00,  35.00,  35.00,  35.00,  35.00,  35.00 ]
         scale    : [    1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00,   1.00 ]
