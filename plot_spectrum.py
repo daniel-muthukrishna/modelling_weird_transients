@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 
 def read_file(filename):
     spectrum = np.loadtxt(filename)
-    wave = spectrum[:,0]
-    flux = spectrum[:,1]
-    fluxErr = spectrum[:,2]
+    wave = spectrum[:, 0]
+    flux = spectrum[:, 1]
+    fluxErr = spectrum[:, 2]
 
     return wave, flux, fluxErr
 
@@ -32,13 +32,14 @@ if __name__ == "__main__":
     plt.figure()
     plot_spectrum("DES16X3bdj_VLT_20160924_rest_frame.txt")
     plot_spectrum("DES16X3bdj_VLT_20160924.fit")
-    plot_spectrum("DES16X3bdj_VLT_20160924.txt")
+    # plot_spectrum("DES16X3bdj_VLT_20160924.txt")
     plt.savefig("DES16X3bdj_VLT_20160924.png")
 
     plt.figure()
     plot_spectrum("DES16C2ayx_2016sep24_rest_frame.txt", label="Smoothed Spectrum")
     plot_spectrum("DES16C2ayx_2016sep24.fit", label="Fit from non-smoothed spectrum")
     plot_spectrum("DES16C2ayx_2016sep24_smoothed7.fit", label="Fit from smoothed spectrum")
+    # plot_spectrum("DES16C2ayx_2016sep24.txt")
     plt.savefig("DES16C2ayx_2016sep24.png")
 
     plt.show()

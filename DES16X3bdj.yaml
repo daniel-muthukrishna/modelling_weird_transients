@@ -20,8 +20,8 @@ evaluator :
     regions      :
         apply    : [      Yes,     Yes,     Yes ]
         weight   : [     0.00,    1.00,    1.00 ]
-        lower    : [     0.00, 2600.00, 5600.00 ]
-        upper    : [ 10000.00, 5600.00, 8600.00 ]
+        lower    : [     0.00, 2600.00, 4900.00 ]
+        upper    : [ 10000.00, 4600.00, 8600.00 ]
 config :
     fit_file     : DES16X3bdj_VLT_20160924.fit
     cache_file   : target_DES16X3bdj.cache

@@ -18,10 +18,10 @@ evaluator :
     target_file  : DES16C2ayx_2016sep24_rest_frame.txt
     vector_norm  : 2.0
     regions      :
-        apply    : [      Yes,     Yes ]
-        weight   : [     0.00,    1.00 ]
-        lower    : [     0.00, 2940.00 ]
-        upper    : [ 10000.00, 8770.00 ]
+        apply    : [      Yes,     Yes,     Yes ]
+        weight   : [     0.00,    1.00,    1.00 ]
+        lower    : [     0.00, 2940.00, 4950.00 ]
+        upper    : [ 10000.00, 4800.00, 8770.00 ]
 config :
     fit_file     : DES16C2ayx_2016sep24.fit
     cache_file   : DES16C2ayx_2016sep24.cache
@@ -29,8 +29,8 @@ config :
     a0           : { fixed:  No, start:   0.99, lower:   0.00, upper:  10.00, scale:   1.00 }
     a1           : { fixed:  No, start:  -1.61, lower: -10.00, upper:  10.00, scale:   1.00 }
     a2           : { fixed:  No, start:   2.16, lower: -10.00, upper:  10.00, scale:   1.00 }
-    v_phot       : { fixed:  No, start:  11.50, lower:   5.00, upper:  35.00, scale:   1.00 }
-    v_outer      : { fixed: Yes, start:  30.00, lower:  15.00, upper:  30.00, scale:   1.00 }
+    v_phot       : { fixed:  No, start:  11.50, lower:   5.00, upper:  40.00, scale:   1.00 }
+    v_outer      : { fixed: Yes, start:  30.00, lower:  15.00, upper:  50.00, scale:   1.00 }
     t_phot       : { fixed:  No, start:   7.65, lower:   5.00, upper:  30.00, scale:   1.00 }
 
     ions         : [     601,    800,   1100,   1201,   1401,   1402,   1601,   2001,   2601,   2602,   2701,   2801 ]
