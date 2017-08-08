@@ -76,7 +76,7 @@ if __name__ == "__main__":
         except ValueError:
             print("Error: Invalid redshift argument. Redshift must be a float")
             exit(1)
-        smooth = 7
+        smooth = 3
         extension = inFile.split('.')[-1]
         outFile = "{0}_restFrame_smooth{1}.{2}".format(inFile.strip("."+extension), smooth, extension)
         try:
