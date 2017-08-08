@@ -46,21 +46,22 @@ def save_spectrum_file(outFilename, outWave, outFlux, outFluxErr):
     np.savetxt(outFilename, outArray)
 
 
-def make_rest_spectrum_file(inFilename, outFilename, z):
+def make_rest_spectrum_file(inFilename, outFilename, z, smooth=3):
     wave, flux, fluxErr = read_file(inFilename)
     waveRest = deredshift_spectrum(wave, z)
-    fluxNorm, fluxNormErr = normalise_flux(flux, fluxErr)
-    smoothedFlux = smooth_spectrum(fluxNorm, 1)
-    save_spectrum_file(outFilename, waveRest, smoothedFlux, fluxNormErr)
+    # fluxNorm, fluxNormErr = normalise_flux(flux, fluxErr)
+    smoothedFlux = smooth_spectrum(flux, smooth)
+    smoothedFluxNorm, fluxNormErr = normalise_flux(smoothedFlux, fluxErr)
+    save_spectrum_file(outFilename, waveRest, smoothedFluxNorm, fluxNormErr)
 
     import matplotlib.pyplot as plt
     plt.figure()
     # plt.plot(wave, flux)
     plt.plot(wave, flux)
-    plt.errorbar(wave, flux, yerr=fluxErr)
+    # plt.errorbar(wave, flux, yerr=fluxErr)
 
     plt.figure()
-    plt.plot(waveRest, smoothedFlux)
+    plt.plot(waveRest, smoothedFluxNorm)
     # plt.errorbar(waveRest, fluxNorm, yerr=fluxNormErr)
     plt.show()
 
@@ -75,10 +76,11 @@ if __name__ == "__main__":
         except ValueError:
             print("Error: Invalid redshift argument. Redshift must be a float")
             exit(1)
+        smooth = 7
         extension = inFile.split('.')[-1]
-        outFile = inFile.strip("."+extension) + "_rest_frame." + extension
+        outFile = "{0}_restFrame_smooth{1}.{2}".format(inFile.strip("."+extension), smooth, extension)
         try:
-            make_rest_spectrum_file(inFile, outFile, redshift)
+            make_rest_spectrum_file(inFile, outFile, redshift, smooth)
         except:
             print("Error: Invalid input file")
             exit(1)
