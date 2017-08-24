@@ -14,4 +14,3 @@ do
     date
     sleep 600
 done
-

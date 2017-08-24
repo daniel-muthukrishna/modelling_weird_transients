@@ -186,7 +186,7 @@ def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minLogTauPl
 
 
 if __name__ == '__main__':
-    directory1 = "Saved_Fits/DES16X3bdj_VLT_20160924/"#old_fits/After_Filter7/Good_Fit_before_adding_more_ions/"
+    directory1 = "Saved_Fits/DES16X3bdj_VLT_20160924/"
     make_plots(directory=directory1, noHupFilename='nohup_DES16X3bdj.out', yamlFilename='DES16X3bdj_VLT_20160924.yaml',
                dataFilename='DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', minLogTauPlot=-1, minImportantLogTau=False,
                plotIonsList=[])
