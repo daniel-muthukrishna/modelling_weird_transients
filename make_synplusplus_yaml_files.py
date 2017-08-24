@@ -136,16 +136,14 @@ def is_zero_spectrum(filename):
         return True
 
 
-if __name__ == '__main__':
-    directory = "Saved_Fits/DES16X3bdj_VLT_20160924/"#old_fits/After_Filter7/Good_Fit_before_adding_more_ions/"
-
-    update_synapps_yaml_file(synappsYamlFilename=directory + 'DES16X3bdj_VLT_20160924.yaml', noHupFilename=directory + 'nohup_DES16X3bdj.out', saveSolutionFilename=directory + 'ion_parameters.csv')
+def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minLogTauPlot=0, minImportantLogTau=0, plotIonsList=[]):
+    update_synapps_yaml_file(synappsYamlFilename=directory + yamlFilename, noHupFilename=directory + noHupFilename, saveSolutionFilename=directory + 'ion_parameters.csv')
 
     if not os.path.exists(os.path.join(directory, 'ion_fits')):
         os.makedirs(os.path.join(directory, 'ion_fits'))
-    synappsYamlFile1 = directory + "DES16X3bdj_VLT_20160924.yaml"
+    synappsYamlFile1 = directory + yamlFilename
     plt.figure()
-    plot_spectrum('DES16X3bdj_VLT_20160924_restFrame_smooth7.txt')
+    plot_spectrum(directory + dataFilename)
 
     offset = 0
     for ionName1 in ION_NAMES.keys():
@@ -156,7 +154,7 @@ if __name__ == '__main__':
             run_bash_command("syn++ {0} > {1}".format(outputFilename1, outputFilename1.replace('.yaml', '.fit')))
             filename = "{0}ion_fits/{1}.fit".format(directory, ionName1)
             if not is_zero_spectrum(filename) and ionName1 != 'All_flat':
-                if logTau1 > 0:
+                if logTau1 > minLogTauPlot:
                     plot_spectrum(filename=filename, label=ionName1, legendNCol=2, title=directory, vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1,1))
                     offset -= 1
                 else:
@@ -164,26 +162,45 @@ if __name__ == '__main__':
             else:
                 print("ZERO FLUX FOR ION: {0}".format(ionName1))
 
-
-    plt.figure()
-    outputFilename1 = "{0}ion_fits/important.yaml".format(directory)
-    success, logTau1 = make_synplusplus_ion_yaml_file(synappsYamlFile=synappsYamlFile1, outputFilename=outputFilename1, flatten='Yes', ionName='important', logOpacityMinImportant=0)
-    run_bash_command("syn++ {0} > {1}".format(outputFilename1, outputFilename1.replace('.yaml', '.fit')))
-    # plot_spectrum('DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', label='Data')
-    plot_spectrum(filename="{0}ion_fits/All_flat.fit".format(directory), label='All ions fit', yLabel='Relative Flux')
-    plot_spectrum(filename="{0}ion_fits/important.fit".format(directory), label='Top ions fit', title='Important ions only fit', yLabel='Relative Flux')
-
-
-    plt.figure()
-    offset = 0
-    plot_spectrum(filename="{0}ion_fits/All.fit".format(directory), label='All ions fit', yLabel='Relative Flux')
-    ionNameList = ['B_III', 'B_IV']
-    for ionName1 in ionNameList:
-        outputFilename1 = "{0}ion_fits/{1}.yaml".format(directory, ionName1)
-        success, logTau1 = make_synplusplus_ion_yaml_file(synappsYamlFile=synappsYamlFile1, outputFilename=outputFilename1, flatten='Yes', ionName=ionName1)
+    if minImportantLogTau:
+        plt.figure()
+        outputFilename1 = "{0}ion_fits/important.yaml".format(directory)
+        success, logTau1 = make_synplusplus_ion_yaml_file(synappsYamlFile=synappsYamlFile1, outputFilename=outputFilename1, flatten='Yes', ionName='important', logOpacityMinImportant=minImportantLogTau)
         run_bash_command("syn++ {0} > {1}".format(outputFilename1, outputFilename1.replace('.yaml', '.fit')))
-        filename = "{0}ion_fits/{1}.fit".format(directory, ionName1)
-        plot_spectrum(filename=filename, label=ionName1, legendNCol=1, title='Selected Ions', vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1, 1))
-        offset -= 1
+        # plot_spectrum('DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', label='Data')
+        plot_spectrum(filename="{0}ion_fits/All_flat.fit".format(directory), label='All ions fit', yLabel='Relative Flux')
+        plot_spectrum(filename="{0}ion_fits/important.fit".format(directory), label='Top ions fit', title='Important ions only fit', yLabel='Relative Flux')
+
+    if plotIonsList:
+        plt.figure()
+        offset = 0
+        plot_spectrum(filename="{0}ion_fits/All.fit".format(directory), label='All ions fit', yLabel='Relative Flux')
+        ionNameList = plotIonsList  # ['B_III', 'B_IV']
+        for ionName1 in ionNameList:
+            outputFilename1 = "{0}ion_fits/{1}.yaml".format(directory, ionName1)
+            success, logTau1 = make_synplusplus_ion_yaml_file(synappsYamlFile=synappsYamlFile1, outputFilename=outputFilename1, flatten='Yes', ionName=ionName1)
+            run_bash_command("syn++ {0} > {1}".format(outputFilename1, outputFilename1.replace('.yaml', '.fit')))
+            filename = "{0}ion_fits/{1}.fit".format(directory, ionName1)
+            plot_spectrum(filename=filename, label=ionName1, legendNCol=1, title='Selected Ions', vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1, 1))
+            offset -= 1
+
+
+if __name__ == '__main__':
+    directory1 = "Saved_Fits/DES16X3bdj_VLT_20160924/"#old_fits/After_Filter7/Good_Fit_before_adding_more_ions/"
+    make_plots(directory=directory1, noHupFilename='nohup_DES16X3bdj.out', yamlFilename='DES16X3bdj_VLT_20160924.yaml',
+               dataFilename='DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', minLogTauPlot=-1, minImportantLogTau=False,
+               plotIonsList=[])
+
+    # directory2 = "Saved_Fits/sn2002ap/"
+    # make_plots(directory=directory2, noHupFilename='nohup_sn2002ap.out', yamlFilename='sn2002ap.yaml',
+    #            dataFilename='sn2002ap-20020206.flm_restFrame_smooth1.txt', minLogTauPlot=-1, minImportantLogTau=-1,
+    #            plotIonsList=[])
+
+    # directory2 = "Saved_Fits/sn2006jo/"
+    # make_plots(directory=directory2, noHupFilename='nohup_sn2006jo.out', yamlFilename='sn2006jo.yaml',
+    #            dataFilename='sn2006jo_restFrame_smooth3.txt', minLogTauPlot=-1, minImportantLogTau=-1,
+    #            plotIonsList=[])
+
+
 
     plt.show()

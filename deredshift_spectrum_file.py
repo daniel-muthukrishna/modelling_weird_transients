@@ -15,7 +15,10 @@ def read_file(filename):
     spectrum = np.loadtxt(filename)
     wave = spectrum[:,0]
     flux = spectrum[:,1]
-    fluxErr = spectrum[:,2]
+    if np.shape(spectrum)[1] == 3:
+        fluxErr = spectrum[:,2]
+    elif np.shape(spectrum)[1] == 2:
+        fluxErr = flux * 0.03  # Set Error to 3% of flux if there is no 3rd column
     return wave, flux, fluxErr
 
 
@@ -76,7 +79,7 @@ if __name__ == "__main__":
         except ValueError:
             print("Error: Invalid redshift argument. Redshift must be a float")
             exit(1)
-        smooth = 3
+        smooth = 1
         extension = inFile.split('.')[-1]
         outFile = "{0}_restFrame_smooth{1}.{2}".format(inFile.strip("."+extension), smooth, extension)
         try:
