@@ -188,13 +188,13 @@ def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minLogTauPl
 if __name__ == '__main__':
     directory1 = "Saved_Fits/DES16X3bdj_VLT_20160924/"
     make_plots(directory=directory1, noHupFilename='nohup_DES16X3bdj.out', yamlFilename='DES16X3bdj_VLT_20160924.yaml',
-               dataFilename='DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', minLogTauPlot=-1, minImportantLogTau=False,
+               dataFilename='DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', minLogTauPlot=-1, minImportantLogTau=True,
                plotIonsList=[])
 
-    # directory2 = "Saved_Fits/sn2002ap/"
-    # make_plots(directory=directory2, noHupFilename='nohup_sn2002ap.out', yamlFilename='sn2002ap.yaml',
-    #            dataFilename='sn2002ap-20020206.flm_restFrame_smooth1.txt', minLogTauPlot=-1, minImportantLogTau=-1,
-    #            plotIonsList=[])
+    directory2 = "Saved_Fits/sn2002ap/"
+    make_plots(directory=directory2, noHupFilename='nohup_sn2002ap.out', yamlFilename='sn2002ap.yaml',
+               dataFilename='sn2002ap-20020206.flm_restFrame_smooth1.txt', minLogTauPlot=-1, minImportantLogTau=-1,
+               plotIonsList=[])
 
     # directory2 = "Saved_Fits/sn2006jo/"
     # make_plots(directory=directory2, noHupFilename='nohup_sn2006jo.out', yamlFilename='sn2006jo.yaml',

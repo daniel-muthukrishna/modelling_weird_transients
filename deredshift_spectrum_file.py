@@ -70,16 +70,17 @@ def make_rest_spectrum_file(inFilename, outFilename, z, smooth=3):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Enter only two arguments: filename redshift")
-    else:
+    if len(sys.argv) == 3 or len(sys.argv) == 4:
         inFile = str(sys.argv[1])
         try:
             redshift = float(sys.argv[2])
         except ValueError:
             print("Error: Invalid redshift argument. Redshift must be a float")
             exit(1)
-        smooth = 1
+        if len(sys.argv) == 4:
+            smooth = int(sys.argv[3])
+        else:
+            smooth = 1
         extension = inFile.split('.')[-1]
         outFile = "{0}_restFrame_smooth{1}.{2}".format(inFile.strip("."+extension), smooth, extension)
         try:
@@ -87,4 +88,7 @@ if __name__ == "__main__":
         except:
             print("Error: Invalid input file")
             exit(1)
-
+        if len(sys.argv) == 4:
+            smooth = int(sys.argv[3])
+    else:
+        print("Enter only two or three arguments: filename redshift smooth")
