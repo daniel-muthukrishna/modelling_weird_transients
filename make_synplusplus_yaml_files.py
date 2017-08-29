@@ -155,7 +155,7 @@ def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minLogTauPl
             filename = "{0}ion_fits/{1}.fit".format(directory, ionName1)
             if not is_zero_spectrum(filename) and ionName1 != 'All_flat':
                 if logTau1 > minLogTauPlot:
-                    plot_spectrum(filename=filename, label=ionName1, legendNCol=2, title=directory, vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1,1))
+                    plot_spectrum(filename=filename, label=ionName1, legendNCol=1, title=directory, vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1,1))
                     offset -= 1
                 else:
                     print("SMALL LOG_TAU: {0} for ION: {1}".format(logTau1, ionName1))
@@ -186,10 +186,10 @@ def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minLogTauPl
 
 
 if __name__ == '__main__':
-    directory1 = "Saved_Fits/DES16X3bdj_VLT_20160924/"
-    make_plots(directory=directory1, noHupFilename='nohup_DES16X3bdj.out', yamlFilename='DES16X3bdj_VLT_20160924.yaml',
-               dataFilename='DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', minLogTauPlot=-1, minImportantLogTau=True,
-               plotIonsList=[])
+    # directory1 = "Saved_Fits/DES16X3bdj_VLT_20160924/"
+    # make_plots(directory=directory1, noHupFilename='nohup_DES16X3bdj.out', yamlFilename='DES16X3bdj_VLT_20160924.yaml',
+    #            dataFilename='DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', minLogTauPlot=-1, minImportantLogTau=True,
+    #            plotIonsList=[])
 
     directory2 = "Saved_Fits/sn2002ap/"
     make_plots(directory=directory2, noHupFilename='nohup_sn2002ap.out', yamlFilename='sn2002ap.yaml',

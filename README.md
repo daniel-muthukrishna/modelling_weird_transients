@@ -1,7 +1,7 @@
 # modelling_weird_transients
 Modelling supernova with synapps
 
-##Explanation of files and steps to model supernova
+## Explanation of files and steps to model supernova
 
 ### Step 1. deredshift_spectrum_file.py
 This is the first thing that should be run on a new spectrum. It deredshifts a file, normalises it, and smooths it. It takes a 3 column file with wavelength, fluxes and fluxErrors. If the errors are not given, it assumes the error is 3%o f the flux values. It should be run in the command line as follows:

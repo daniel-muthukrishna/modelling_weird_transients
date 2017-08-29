@@ -20,30 +20,34 @@ def check_if_abrupt_ended(noHupFile):
 
     if "WARNING" in output:
         print("Ended without conversion!")
-        return output
+        endState = 'Error'
     elif "Thank you" in output:
         print("Finished Program!")
+        endState = 'Finished'
+        with open(noHupFile, 'r') as f:
+            for line in f:
+                if 'Final Min' in line:
+                    output = line
+                    break
     else:
         print("Program still running")
-        return output
+        endState = 'Running'
 
-    return
+    return output, endState
 
 
 def read_last_fit(noHupFile, active, saveSolutionFilename=''):
-    output = check_if_abrupt_ended(noHupFile)
-    if output is None:
-        return
+    output, endState = check_if_abrupt_ended(noHupFile)
 
     print("Reading last fit...")
-    lastFit = output.split('\\n')[0]
-    if "New Min" in lastFit:
+    lastFit = output.split('\\n\\n')[-1]
+    if ("New Min" in lastFit) or ('Final Min' in lastFit):
         lastFit = lastFit.split('x=')[1].split(' step')[0]
         setupYamlEntries, opacityYamlLines = yaml_entries(lastFit, active)
         if saveSolutionFilename != '':
             print_and_save_solutions(saveSolutionFilename, lastFit, active)
     else:
-        # This should never happen. It means that we didn't read enough lines at the end of the file
+        # This should never happen. It means that the last line isn't a the latest fit
         "\n\nNO FIT FOUND!!!\n\n"
 
     return setupYamlEntries, opacityYamlLines
