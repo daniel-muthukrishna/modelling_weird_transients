@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 from collections import OrderedDict
+from helpers import calc_opacity
 
 ION_NAMES = {'H_I': '100', 'He_I': '200', 'He_II': '201', 'Li_I': '300', 'Li_II': '301', 'Be_I': '400', 'Be_II': '401', 'Be_III': '402', 'B_I': '500', 'B_II': '501', 'B_III': '502', 'B_IV': '503', 'C_I': '600', 'C_II': '601', 'C_III': '602', 'N_I': '700', 'N_II': '701', 'N_III': '702', 'N_IV': '703', 'N_V': '704', 'O_I': '800', 'O_II': '801', 'O_III': '802', 'O_IV': '803', 'O_V': '804', 'F_I': '900', 'F_II': '901', 'Ne_I': '1000', 'Na_I': '1100', 'Mg_I': '1200', 'Mg_II': '1201', 'Al_I': '1300', 'Al_II': '1301', 'Al_III': '1302', 'Si_I': '1400', 'Si_II': '1401', 'Si_III': '1402', 'Si_IV': '1403', 'P_I': '1500', 'P_II': '1501', 'P_III': '1502', 'S_I': '1600',  'S_II': '1601', 'S_III': '1602', 'Cl_I': '1700', 'Ar_I': '1800', 'Ar_II': '1801', 'K_I': '1900', 'K_II': '1901', 'Ca_I': '2000', 'Ca_II': '2001', 'Sc_I': '2100', 'Sc_II': '2101', 'Ti_III': '2202', 'V_I': '2300', 'V_II': '2301', 'V_III': '2302', 'Cr_I': '2400', 'Cr_II': '2401', 'Cr_III': '2402', 'Mn_I': '2500', 'Mn_II': '2501', 'Mn_III': '2502', 'Fe_I': '2600', 'Fe_II': '2601', 'Fe_III': '2602', 'Fe_IV': '2603', 'Co_I': '2700', 'Co_II': '2701', 'Co_III': '2702', 'Co_IV': '2703', 'Ni_I': '2800', 'Ni_II': '2801', 'Ni_III': '2802', 'Ni_IV': '2803', 'Cu_II': '2901', 'Zn_I': '3002', 'Sr_I': '3801', 'Ba_I': '5600', 'Ba_II': '5601'}
 ION_NUMBERS = dict((v,k) for k,v in ION_NAMES.items())  # Swap keys and values of dictionary
@@ -63,8 +64,8 @@ def read_synapps_solution(xStr, activeStr, vref=10.0):
             if param == 'v_max':
                 vmax = float(ionInfo[ionName]['v_max'])
             if j == numOfOpacityParams - 1:
-                ionInfo[ionName]['opacity_at_vmin'] = logtau * (vref - vmin) / aux
-                ionInfo[ionName]['opacity_at_vmax'] = logtau * (vref - vmax) / aux
+                ionInfo[ionName]['opacity_at_vmin'] = calc_opacity(vmin, logtau, vref, aux)
+                ionInfo[ionName]['opacity_at_vmax'] = calc_opacity(vmax, logtau, vref, aux)
 
     return setupInfo, ionInfo
 
