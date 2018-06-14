@@ -36,7 +36,7 @@ def check_if_abrupt_ended(noHupFile):
     return output, endState
 
 
-def read_last_fit(noHupFile, active, saveSolutionFilename=''):
+def read_last_fit(noHupFile, active, saveSolutionFilename='', vref=10):
     output, endState = check_if_abrupt_ended(noHupFile)
 
     print("Reading last fit...")
@@ -45,7 +45,7 @@ def read_last_fit(noHupFile, active, saveSolutionFilename=''):
         lastFit = lastFit.split('x=')[1].split(' step')[0]
         setupYamlEntries, opacityYamlLines = yaml_entries(lastFit, active)
         if saveSolutionFilename != '':
-            print_and_save_solutions(saveSolutionFilename, lastFit, active)
+            print_and_save_solutions(saveSolutionFilename, lastFit, active, vref)
     else:
         # This should never happen. It means that the last line isn't a the latest fit
         "\n\nNO FIT FOUND!!!\n\n"
@@ -57,7 +57,8 @@ def update_yaml_file(yamlFilename, noHupFilename, saveSolutionFilename=''):
     with open(yamlFilename, 'r') as file:
         data = file.readlines()
         active = data[37].split(': ')[1].split('\n')[0]
-    setupEntries, ionInfoEntries = read_last_fit(noHupFile=noHupFilename, active=active, saveSolutionFilename=saveSolutionFilename)
+        vref = float(data[9].split(': ')[1].split('\n')[0])
+    setupEntries, ionInfoEntries = read_last_fit(noHupFile=noHupFilename, active=active, saveSolutionFilename=saveSolutionFilename, vref=vref)
 
     if 'a0' not in data[28] or 'start' not in data[42]:
         print("\n\nInconsistently formatted file!!!\n\n")

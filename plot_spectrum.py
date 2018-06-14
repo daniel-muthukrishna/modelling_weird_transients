@@ -5,9 +5,12 @@ import os
 
 def read_file(filename):
     spectrum = np.loadtxt(filename)
-    wave = spectrum[:, 0]
-    flux = spectrum[:, 1]
-    fluxErr = spectrum[:, 2]
+    if spectrum != []:
+        wave = spectrum[:, 0]
+        flux = spectrum[:, 1]
+        fluxErr = spectrum[:, 2]
+    else:
+        wave, flux, fluxErr = np.zeros(2), np.zeros(2), np.zeros(2)
 
     return wave, flux, fluxErr
 

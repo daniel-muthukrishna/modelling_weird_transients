@@ -22,7 +22,7 @@ def update_synapps_yaml_file(synappsYamlFilename, noHupFilename, saveSolutionFil
     update_yaml_file(synappsYamlFilename, noHupFilename, saveSolutionFilename)
 
 
-def make_synplusplus_ion_yaml_file(synappsYamlFile, outputFilename, flatten='Yes', ionName='All', logOpacityMinImportant=-10):
+def make_synplusplus_ion_yaml_file(synappsYamlFile, outputFilename, flatten='Yes', ionName='All', opacityMaxImportant=-10):
     with open(synappsYamlFile, 'r') as file:
         data = file.readlines()
         minWave = data[22].split(', ')[1].split(']')[0]
@@ -55,16 +55,21 @@ def make_synplusplus_ion_yaml_file(synappsYamlFile, outputFilename, flatten='Yes
 
         if 'All' in ionName:
             active = activeOriginal
-            logOpacity = 10
+            opacity_at_vmin = 99
         elif ionName == 'important':
             activeList = ['No'] * len(activeOriginalList)
             for i in range(len(activeOriginalList)):
                 if 'Yes' in activeOriginalList[i]:
-                    logOpacity = float(logTau.strip('[').strip(']').split(',')[i])
-                    if logOpacity > logOpacityMinImportant:
+                    logTauIonVal = float(logTau.strip('[').strip(']').split(',')[i])
+                    vMinIonVal = float(vMin.strip('[').strip(']').split(',')[i])
+                    vMaxIonVal = float(vMax.strip('[').strip(']').split(',')[i])
+                    auxIonVal = float(aux.strip('[').strip(']').split(',')[i])
+                    opacity_at_vmin = logTauIonVal * (float(vRef) - vMinIonVal) / auxIonVal
+                    if opacity_at_vmin < opacityMaxImportant:
                         activeList[i] = 'Yes'
                         print("Important Ion: %s" % ION_NUMBERS[ionNumbersList[i]])
             active = "[    {0} ]".format(",     ".join(activeList))
+            opacity_at_vmin = 99
         elif type(ionName) is list:
             activeList = ['No'] * len(ionNumbersList)
             for ion in ionName:
@@ -74,13 +79,16 @@ def make_synplusplus_ion_yaml_file(synappsYamlFile, outputFilename, flatten='Yes
                     activeList[index] = 'Yes'
                     print("Fitting ion {0}...".format(ion))
             active = "[    {0} ]".format(",     ".join(activeList))
-            logOpacity = 10
+            opacity_at_vmin = 99
         else:
             ionNumber = ION_NAMES[ionName]
             if ionNumber not in ionNumbersList:
                 return False, None
             index = ionNumbersList.index(ionNumber)
-            logOpacity = float(logTau.strip('[').strip(']').split(',')[index])
+            logTauIonVal = float(logTau.strip('[').strip(']').split(',')[index])
+            vMinIonVal = float(vMin.strip('[').strip(']').split(',')[index])
+            vMaxIonVal = float(vMax.strip('[').strip(']').split(',')[index])
+            auxIonVal = float(aux.strip('[').strip(']').split(',')[index])
             if 'Yes' in activeOriginalList[index]:
                 activeList = ['No'] * len(ionNumbersList)
                 activeList[index] = 'Yes'
@@ -89,6 +97,8 @@ def make_synplusplus_ion_yaml_file(synappsYamlFile, outputFilename, flatten='Yes
             else:
                 # print("{0} not fit".format(ionName))
                 return False, None
+
+            opacity_at_vmin = logTauIonVal * (float(vRef) - vMinIonVal) / auxIonVal
 
     with open(outputFilename, 'w') as file:
         file.write("output :\n")
@@ -125,7 +135,7 @@ def make_synplusplus_ion_yaml_file(synappsYamlFile, outputFilename, flatten='Yes
         file.write("        aux      : {0}\n".format(aux))
         file.write("        temp     : {0}\n".format(temp))
 
-    return True, float(logOpacity)
+    return True, opacity_at_vmin
 
 
 def is_zero_spectrum(filename):
@@ -136,7 +146,7 @@ def is_zero_spectrum(filename):
         return True
 
 
-def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minLogTauPlot=0, minImportantLogTau=0, plotIonsList=[]):
+def make_plots(directory, noHupFilename, yamlFilename, dataFilename, maxOpacityPlot=0, maxImportantOpacity=0, plotIonsList=[]):
     update_synapps_yaml_file(synappsYamlFilename=directory + yamlFilename, noHupFilename=directory + noHupFilename, saveSolutionFilename=directory + 'ion_parameters.csv')
 
     if not os.path.exists(os.path.join(directory, 'ion_fits')):
@@ -145,27 +155,37 @@ def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minLogTauPl
     plt.figure()
     plot_spectrum(directory + dataFilename)
 
+    storePlotInfo = []
+
     offset = 0
     for ionName1 in ION_NAMES.keys():
         outputFilename1 = "{0}ion_fits/{1}.yaml".format(directory, ionName1)
         flatten = 'No' if ionName1 == 'All' else 'Yes'
-        success, logTau1 = make_synplusplus_ion_yaml_file(synappsYamlFile=synappsYamlFile1, outputFilename=outputFilename1, flatten=flatten, ionName=ionName1)
+        success, opacity = make_synplusplus_ion_yaml_file(synappsYamlFile=synappsYamlFile1, outputFilename=outputFilename1, flatten=flatten, ionName=ionName1)
         if success:
             run_bash_command("syn++ {0} > {1}".format(outputFilename1, outputFilename1.replace('.yaml', '.fit')))
             filename = "{0}ion_fits/{1}.fit".format(directory, ionName1)
             if not is_zero_spectrum(filename) and ionName1 != 'All_flat':
-                if logTau1 > minLogTauPlot:
-                    plot_spectrum(filename=filename, label=ionName1, legendNCol=1, title=directory, vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1,1))
-                    offset -= 1
+                if 'All' in filename:
+                    plot_spectrum(filename=filename, label=ionName1, legendNCol=1, title=directory, vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1, 1))
+                elif opacity < maxOpacityPlot:
+                    storePlotInfo.append([opacity, filename, ionName1])
                 else:
-                    print("SMALL LOG_TAU: {0} for ION: {1}".format(logTau1, ionName1))
+                    print("SMALL OPACITY: {0} for ION: {1}".format(opacity, ionName1))
             else:
                 print("ZERO FLUX FOR ION: {0}".format(ionName1))
 
-    if minImportantLogTau:
+    # Plot ions in order or opacity
+    storePlotInfo = sorted(storePlotInfo, key=lambda x: x[0])
+    for plotInfo in storePlotInfo:
+        opacity, filename, ionName1 = plotInfo
+        plot_spectrum(filename=filename, label=ionName1, legendNCol=1, title=directory, vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1,1))
+        offset -= 1
+
+    if maxImportantOpacity:
         plt.figure()
         outputFilename1 = "{0}ion_fits/important.yaml".format(directory)
-        success, logTau1 = make_synplusplus_ion_yaml_file(synappsYamlFile=synappsYamlFile1, outputFilename=outputFilename1, flatten='Yes', ionName='important', logOpacityMinImportant=minImportantLogTau)
+        success, opacity = make_synplusplus_ion_yaml_file(synappsYamlFile=synappsYamlFile1, outputFilename=outputFilename1, flatten='Yes', ionName='important', opacityMaxImportant=maxImportantOpacity)
         run_bash_command("syn++ {0} > {1}".format(outputFilename1, outputFilename1.replace('.yaml', '.fit')))
         # plot_spectrum('DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', label='Data')
         plot_spectrum(filename="{0}ion_fits/All_flat.fit".format(directory), label='All ions fit', yLabel='Relative Flux')
@@ -178,7 +198,7 @@ def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minLogTauPl
         ionNameList = plotIonsList  # ['B_III', 'B_IV']
         for ionName1 in ionNameList:
             outputFilename1 = "{0}ion_fits/{1}.yaml".format(directory, ionName1)
-            success, logTau1 = make_synplusplus_ion_yaml_file(synappsYamlFile=synappsYamlFile1, outputFilename=outputFilename1, flatten='Yes', ionName=ionName1)
+            success, opacity = make_synplusplus_ion_yaml_file(synappsYamlFile=synappsYamlFile1, outputFilename=outputFilename1, flatten='Yes', ionName=ionName1)
             run_bash_command("syn++ {0} > {1}".format(outputFilename1, outputFilename1.replace('.yaml', '.fit')))
             filename = "{0}ion_fits/{1}.fit".format(directory, ionName1)
             plot_spectrum(filename=filename, label=ionName1, legendNCol=1, title='Selected Ions', vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1, 1))
@@ -186,21 +206,23 @@ def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minLogTauPl
 
 
 if __name__ == '__main__':
-    # directory1 = "Saved_Fits/DES16X3bdj_VLT_20160924/"
-    # make_plots(directory=directory1, noHupFilename='nohup_DES16X3bdj.out', yamlFilename='DES16X3bdj_VLT_20160924.yaml',
-    #            dataFilename='DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', minLogTauPlot=-1, minImportantLogTau=True,
-    #            plotIonsList=[])
-
-    directory2 = "Saved_Fits/sn2002ap/"
-    make_plots(directory=directory2, noHupFilename='nohup_sn2002ap.out', yamlFilename='sn2002ap.yaml',
-               dataFilename='sn2002ap-20020206.flm_restFrame_smooth1.txt', minLogTauPlot=-1, minImportantLogTau=-1,
+    directory1 = "Saved_Fits/DES16X3bdj_VLT_20160924/"
+    make_plots(directory=directory1, noHupFilename='nohup_DES16X3bdj_2.out', yamlFilename='DES16X3bdj_VLT_20160924.yaml',
+               dataFilename='DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', maxOpacityPlot=0, maxImportantOpacity=True,
                plotIonsList=[])
+    plt.figure()
+    plot_spectrum(directory1 + 'DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', label='Data')
+    plot_spectrum(filename="{0}ion_fits/All.fit".format(directory1), label='Best fit', yLabel='Relative Flux')
+
+
+    # directory2 = "Saved_Fits/sn2002ap/"
+    # make_plots(directory=directory2, noHupFilename='nohup_sn2002ap.out', yamlFilename='sn2002ap.yaml',
+    #            dataFilename='sn2002ap-20020206.flm_restFrame_smooth1.txt', maxOpacityPlot=-1, maxImportantOpacity=-1,
+    #            plotIonsList=[])
 
     # directory2 = "Saved_Fits/sn2006jo/"
     # make_plots(directory=directory2, noHupFilename='nohup_sn2006jo.out', yamlFilename='sn2006jo.yaml',
-    #            dataFilename='sn2006jo_restFrame_smooth3.txt', minLogTauPlot=-1, minImportantLogTau=-1,
+    #            dataFilename='sn2006jo_restFrame_smooth3.txt', maxOpacityPlot=-1, maxImportantOpacity=-1,
     #            plotIonsList=[])
-
-
 
     plt.show()
