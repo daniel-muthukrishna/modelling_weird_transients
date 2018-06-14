@@ -66,7 +66,7 @@ def make_synplusplus_ion_yaml_file(synappsYamlFile, outputFilename, flatten='Yes
                     vMaxIonVal = float(vMax.strip('[').strip(']').split(',')[i])
                     auxIonVal = float(aux.strip('[').strip(']').split(',')[i])
                     opacity_at_vmin = calc_opacity(vMinIonVal, logTauIonVal, vRef, auxIonVal)
-                    if opacity_at_vmin < opacityMinImportant: #################################
+                    if opacity_at_vmin > opacityMinImportant: #################################
                         activeList[i] = 'Yes'
                         print("Important Ion: %s" % ION_NUMBERS[ionNumbersList[i]], opacity_at_vmin)
             active = "[    {0} ]".format(",     ".join(activeList))
@@ -169,7 +169,7 @@ def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minOpacityP
             if not is_zero_spectrum(filename) and ionName1 != 'All_flat':
                 if 'All' in filename:
                     plot_spectrum(filename=filename, label=ionName1, legendNCol=1, title=directory, vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1, 1))
-                elif opacity < minOpacityPlot: ############################################
+                elif opacity > minOpacityPlot: ############################################
                     storePlotInfo.append([opacity, filename, ionName1])
                 else:
                     print("SMALL OPACITY: {0} for ION: {1}".format(opacity, ionName1))
@@ -177,7 +177,7 @@ def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minOpacityP
                 print("ZERO FLUX FOR ION: {0}".format(ionName1))
 
     # Plot ions in order or opacity
-    storePlotInfo = sorted(storePlotInfo, key=lambda x: x[0])
+    storePlotInfo = sorted(storePlotInfo, key=lambda x: x[0])[::-1]
     for plotInfo in storePlotInfo:
         opacity, filename, ionName1 = plotInfo
         plot_spectrum(filename=filename, label=ionName1, legendNCol=1, title=directory, vOffset=offset, yLabel='Relative Flux + Offset', bbox_to_anchor=(1,1))
@@ -209,7 +209,7 @@ def make_plots(directory, noHupFilename, yamlFilename, dataFilename, minOpacityP
 if __name__ == '__main__':
     directory1 = "Saved_Fits/DES16X3bdj_VLT_20160924/"
     make_plots(directory=directory1, noHupFilename='nohup_DES16X3bdj_2.out', yamlFilename='DES16X3bdj_VLT_20160924.yaml',
-               dataFilename='DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', minOpacityPlot=0.003868055, minImportantOpacity=0.003868055,
+               dataFilename='DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', minOpacityPlot=-10, minImportantOpacity=-10,
                plotIonsList=[])
     plt.figure()
     plot_spectrum(directory1 + 'DES16X3bdj_VLT_20160924_restFrame_smooth7.txt', label='Data')
